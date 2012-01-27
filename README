@@ -2,4 +2,94 @@
 * toDoo! v1 © 2011 Woody NaDobhar *
 ***********************************
 
-toDoo is a test run of cakePHP in conjunction with git/gitHub.  There's almost nothing here worth checking out, as at this point another task manager program isn't whipping a dead horse, it's whipping a bottle of glue.
+toDoo is a test run of cakePHP in conjunction with git/gitHub.  There's almost nothing here 
+worth checking out, as at this point another toDo list isn't whipping a dead horse, it's 
+whipping a bottle of glue.  Great practice tho 8)
+
+Bizarre side note: that capital T in Task.php is a phantom.  I've viewed that file with half a 
+dozen different programs, and half of them think it's a lower case, and the other a capital.
+
+***********************************
+* database					      *
+***********************************
+
+-- phpMyAdmin SQL Dump
+-- version 3.4.5
+-- http://www.phpmyadmin.net
+
+--
+-- Database: `todoo`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `statuses`
+--
+
+CREATE TABLE IF NOT EXISTS `statuses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `statuses`
+--
+
+INSERT INTO `statuses` (`id`, `name`) VALUES
+(1, 'In Progress'),
+(2, 'Complete'),
+(3, 'Cancelled');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `statuses_tasks`
+--
+
+CREATE TABLE IF NOT EXISTS `statuses_tasks` (
+  `status_id` int(11) NOT NULL,
+  `task_id` int(11) NOT NULL,
+  PRIMARY KEY (`status_id`,`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `statuses_tasks`
+--
+
+INSERT INTO `statuses_tasks` (`status_id`, `task_id`) VALUES
+(1, 1),
+(1, 2),
+(1, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tasks`
+--
+
+CREATE TABLE IF NOT EXISTS `tasks` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) NOT NULL,
+  `status_id` int(10) NOT NULL DEFAULT '1',
+  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deadline` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `completed_on` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+
+--
+-- Dumping data for table `tasks`
+--
+
+INSERT INTO `tasks` (`id`, `title`, `status_id`, `created_on`, `deadline`, `completed_on`) VALUES
+(1, 'Test Task 1', 1, '2012-01-20 05:00:00', '2012-01-01 20:13:00', '0000-00-00 00:00:00'),
+(2, 'Test Task 2', 1, '2012-01-20 05:00:00', '2012-01-30 20:13:58', '0000-00-00 00:00:00'),
+(3, 'Test Task 3', 1, '2012-01-20 05:00:00', '2012-01-29 20:14:22', '0000-00-00 00:00:00'),
+(5, 'Test Add 2a', 2, '2012-01-20 05:00:00', '2012-08-27 07:10:00', '2012-01-27 06:52:05'),
+(6, 'Test Add 3', 3, '2012-01-27 05:04:07', '2012-04-27 09:03:00', '0000-00-00 00:00:00'),
+(7, 'Test Add 4', 1, '2012-01-27 05:34:07', '2012-10-27 09:33:00', '0000-00-00 00:00:00'),
+(8, 'Test Add 5', 3, '2012-01-27 05:34:23', '2012-08-27 09:34:00', '0000-00-00 00:00:00'),
+(9, 'Test Add 6', 2, '2012-01-27 07:56:52', '2012-01-13 07:56:00', '2012-01-27 07:57:00'),
+(10, 'Test Add 6', 2, '2012-01-27 07:57:18', '2012-05-27 06:57:00', '2012-01-27 07:57:29');
