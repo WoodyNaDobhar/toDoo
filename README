@@ -93,3 +93,70 @@ INSERT INTO `tasks` (`id`, `title`, `status_id`, `created_on`, `deadline`, `comp
 (8, 'Test Add 5', 3, '2012-01-27 05:34:23', '2012-08-27 09:34:00', '0000-00-00 00:00:00'),
 (9, 'Test Add 6', 2, '2012-01-27 07:56:52', '2012-01-13 07:56:00', '2012-01-27 07:57:00'),
 (10, 'Test Add 6', 2, '2012-01-27 07:57:18', '2012-05-27 06:57:00', '2012-01-27 07:57:29');
+
+--
+-- Table structure for table `locations`
+--
+
+CREATE TABLE IF NOT EXISTS `locations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Dumping data for table `locations`
+--
+
+INSERT INTO `locations` (`id`, `name`) VALUES
+(1, 'None'),
+(2, 'Work'),
+(4, 'Shopping');
+
+--
+-- Table structure for table `locations_tasks`
+--
+
+CREATE TABLE IF NOT EXISTS `locations_tasks` (
+  `location_id` int(11) NOT NULL,
+  `task_id` int(11) NOT NULL,
+  PRIMARY KEY (`location_id`,`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `locations_tasks`
+--
+
+INSERT INTO `locations_tasks` (`location_id`, `task_id`) VALUES
+(1, 1);
+
+--
+-- Table structure for table `map_points`
+--
+
+CREATE TABLE IF NOT EXISTS `map_points` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `location_id` int(10) NOT NULL DEFAULT '0',
+  `latitude` float(9,6) DEFAULT NULL,
+  `longitude` float(9,6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`location_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `map_points`
+--
+
+INSERT INTO `map_points` (`id`, `location_id`, `latitude`, `longitude`) VALUES
+(1, 2, 39.986900, -83.006676),
+(4, 2, 12.345678, -123.456787);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `map_points`
+--
+ALTER TABLE `map_points`
+  ADD CONSTRAINT `map_points_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`);
