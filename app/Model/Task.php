@@ -18,8 +18,15 @@ class Task extends AppModel{
 			'joinTable' => 'statuses_tasks',
 			'foreignKey' => 'task_id',
 			'associationForeignKey' => 'status_id',
-			'with' => 'StatusesTasks',
+			'with' => 'StatusesTasks'
 		),
+		'Location' => array(
+			'className' => 'Location',
+			'joinTable' => 'locations_tasks',
+			'foreignKey' => 'task_id',
+			'associationForeignKey' => 'location_id',
+			'with' => 'LocationsTasks'
+		)
 	);
 	
 	//form validation
@@ -33,14 +40,6 @@ class Task extends AppModel{
 				'message' => 'This field must be a valid timestamp.'
 		)
 	);
-	
-	//custom validate datetime
-	function datetime($data){
-		$value = array_values($data);
-		$value = $value[0];
-		$regex = '%^((?:2|1)\\d{3}(?:-|\\/)(?:(?:0[1-9])|(?:1[0-2]))(?:-|\\/)(?:(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))(?:T|\\s)(?:(?:[0-1][0-9])|(?:2[0-3])):(?:[0-5][0-9]):(?:[0-5][0-9]))$%';
-		return preg_match($regex, $value);
-	}
 }
 
 ?>

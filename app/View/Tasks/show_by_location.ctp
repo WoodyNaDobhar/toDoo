@@ -1,6 +1,7 @@
 <!-- File: /app/View/Tasks/index.ctp -->
 
 <h1>Current Task List</h1>
+<form action="../">
 <?php 
 	
 	//link bar
@@ -13,6 +14,7 @@
 	echo $this->Form->select('unimportant', $linkLocations, array('onchange'=>"window.open(this.options[this.selectedIndex].value,'_top')", 'default'=>'/foundersFactory/tasks/'));
 	
 ?>
+	</form>
 <table>
 	<tr>
 		<th>Id</th>

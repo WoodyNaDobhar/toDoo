@@ -15,12 +15,6 @@ class TasksController extends AppController{
 	public $helpers = array('Html', 'Form');
 	public $components = array('Session');
 	
-	//setup our view
-	public function view($id = null){
-		$this->Task->id = $id;
-		$this->set('task', $this->Task->read());
-	}
-	
 	//default, list the tasks in progress, in order of deadline
 	public function index(){
 		
@@ -32,6 +26,16 @@ class TasksController extends AppController{
 		
 		//our statuses
 		$this->set('statuses', $this->Task->Status->find('list'));
+		
+		//our locations
+		$this->set('locations', $this->Task->Location->find('list'));
+		
+		//our link locations
+		$linkLocation['/foundersFactory/tasks/'] = "Show by Location";
+		foreach($this->Task->Location->find('list') as $key => $location){
+			$linkLocation['/foundersFactory/tasks/showByLocation/'.$key] = $location;
+		}
+		$this->set('linkLocations', $linkLocation);
 	}
 	
 	//list the tasks completed, in order of completion
@@ -47,6 +51,29 @@ class TasksController extends AppController{
 		$this->set('statuses', $this->Task->Status->find('list'));
 	}
 	
+	//list the tasks by location, in order of deadline
+	public function showByLocation($id){
+		
+		//our tasks
+		$this->set('tasks', $this->Task->find('all', array(
+			'conditions' => array('Task.location_id' => $id),
+			'order' => array('Task.deadline'),
+		)));
+		
+		//our statuses
+		$this->set('statuses', $this->Task->Status->find('list'));
+		
+		//our locations
+		$this->set('locations', $this->Task->Location->find('list'));
+		
+		//our link locations
+		$linkLocation['/foundersFactory/tasks/'] = "Show by Location";
+		foreach($this->Task->Location->find('list') as $key => $location){
+			$linkLocation['/foundersFactory/tasks/showByLocation/'.$key] = $location;
+		}
+		$this->set('linkLocations', $linkLocation);
+	}
+	
 	//list all the tasks, in order of entry
 	public function showAll(){
 		
@@ -59,15 +86,22 @@ class TasksController extends AppController{
 		$this->set('statuses', $this->Task->Status->find('list'));
 	}
 	
+	//view just the one
+	public function view($id = null){
+		$this->Task->id = $id;
+		$this->set('task', $this->Task->read());
+	}
+	
 	//adding a task
 	public function add(){
 		
+		$this->set('locations', $this->Task->Location->find('list'));
 		if($this->request->is('post')){
 			//save and continue, or fail and tell 'em
 			if($this->Task->save($this->request->data)){
 				$this->Session->setFlash('Your task has been saved.');
 				$this->redirect(array('action' => 'index'));
-			} else{
+			}else{
 				$this->Session->setFlash('Unable to add your task.');
 			}
 		}else if($this->request->data){
@@ -86,8 +120,9 @@ class TasksController extends AppController{
 
 			//set the vars
 			$this->set('statuses', $this->Task->Status->find('list'));
+			$this->set('locations', $this->Task->Location->find('list'));
 			$this->request->data = $this->Task->read();
-		} else{
+		}else{
 			
 			//if it saves, continue, otherwise fail and tell 'em
 			if ($this->Task->save($this->request->data)){
@@ -105,7 +140,7 @@ class TasksController extends AppController{
 				//finish up
 				$this->Session->setFlash('Your task has been updated.');
 				$this->redirect(array('action' => 'index'));
-			} else{
+			}else{
 				$this->Session->setFlash('Unable to update your task.');
 			}
 		}
