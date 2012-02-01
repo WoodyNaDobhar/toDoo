@@ -11,8 +11,9 @@
 class LocationsController extends AppController{
 	
 	//our vars
-	public $name = 'Locations';
+	public $name = 'Location';
 	public $components = array('Session');
+	var $helpers = array('Js');
 	
 	//default, list the locations in progress, in order of deadline
 	public function index(){

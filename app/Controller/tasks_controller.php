@@ -11,9 +11,9 @@
 class TasksController extends AppController{
 	
 	//our vars
-	public $name = 'Tasks';
-	public $helpers = array('Html', 'Form');
-	public $components = array('Session');
+	public $name = 'Task';
+	var $helpers = array('Html', 'Form', 'Js');
+	public $components = array('Session', 'RequestHandler');
 	
 	//default, list the tasks in progress, in order of deadline
 	public function index(){
@@ -29,6 +29,9 @@ class TasksController extends AppController{
 		
 		//our locations
 		$this->set('locations', $this->Task->Location->find('list'));
+		
+		//our keywords
+		$this->set('keywords', $this->Task->Keyword->find('list'));
 		
 		//our link locations
 		$linkLocation['/foundersFactory/tasks/'] = "Show by Location";
@@ -49,6 +52,19 @@ class TasksController extends AppController{
 		
 		//our statuses
 		$this->set('statuses', $this->Task->Status->find('list'));
+		
+		//our locations
+		$this->set('locations', $this->Task->Location->find('list'));
+		
+		//our keywords
+		$this->set('keywords', $this->Task->Keyword->find('list'));
+		
+		//our link locations
+		$linkLocation['/foundersFactory/tasks/'] = "Show by Location";
+		foreach($this->Task->Location->find('list') as $key => $location){
+			$linkLocation['/foundersFactory/tasks/showByLocation/'.$key] = $location;
+		}
+		$this->set('linkLocations', $linkLocation);
 	}
 	
 	//list the tasks by location, in order of deadline
@@ -65,6 +81,9 @@ class TasksController extends AppController{
 		
 		//our locations
 		$this->set('locations', $this->Task->Location->find('list'));
+		
+		//our keywords
+		$this->set('keywords', $this->Task->Keyword->find('list'));
 		
 		//our link locations
 		$linkLocation['/foundersFactory/tasks/'] = "Show by Location";
@@ -84,6 +103,19 @@ class TasksController extends AppController{
 		
 		//our statuses
 		$this->set('statuses', $this->Task->Status->find('list'));
+		
+		//our locations
+		$this->set('locations', $this->Task->Location->find('list'));
+		
+		//our keywords
+		$this->set('keywords', $this->Task->Keyword->find('list'));
+		
+		//our link locations
+		$linkLocation['/foundersFactory/tasks/'] = "Show by Location";
+		foreach($this->Task->Location->find('list') as $key => $location){
+			$linkLocation['/foundersFactory/tasks/showByLocation/'.$key] = $location;
+		}
+		$this->set('linkLocations', $linkLocation);
 	}
 	
 	//view just the one
@@ -95,7 +127,10 @@ class TasksController extends AppController{
 	//adding a task
 	public function add(){
 		
+		//set our vars
 		$this->set('locations', $this->Task->Location->find('list'));
+		$this->set('keywords', $this->Task->Keyword->find('list'));
+		
 		if($this->request->is('post')){
 			//save and continue, or fail and tell 'em
 			if($this->Task->save($this->request->data)){
@@ -116,16 +151,17 @@ class TasksController extends AppController{
 		$this->Task->id = $id;
 		$timestamp = date('Y-m-d H:i:s');
 		
-		if ($this->request->is('get')){
+		if($this->request->is('get')){
 
 			//set the vars
 			$this->set('statuses', $this->Task->Status->find('list'));
 			$this->set('locations', $this->Task->Location->find('list'));
+			$this->set('keywords', $this->Task->Keyword->find('list'));
 			$this->request->data = $this->Task->read();
 		}else{
 			
 			//if it saves, continue, otherwise fail and tell 'em
-			if ($this->Task->save($this->request->data)){
+			if($this->Task->save($this->request->data)){
 				
 				//if the status is set to in progress, we need to clear the timestamp
 				if($this->request->data['Task']['status_id'] == 1){
@@ -149,15 +185,112 @@ class TasksController extends AppController{
 	//delete a task
 	function delete($id){
 		
-		if ($this->request->is('get')){
+		if($this->request->is('get')){
 			//uh...it shouldn't be.  This is not allowed.  Seriously.
 			throw new MethodNotAllowedException();
 		}
 		
 		//let's do this
-		if ($this->Task->delete($id)){
+		if($this->Task->delete($id)){
 			$this->Session->setFlash('The task with id: ' . $id . ' has been deleted.');
 			$this->redirect(array('action' => 'index'));
+		}
+	}
+
+	//autocomplete search function
+	function search(){
+		
+		//if we've got ajax...
+		if( $this->RequestHandler->isAjax() ){
+			
+			//ja, debug ees gûd
+   			Configure::write('debug', 2);
+			
+			//set it up
+   			$this->autoRender = false;
+			$keywords = $this->Task->Keyword->find('all',array('conditions'=>array('Keyword.name LIKE'=>'%'.$_GET['term'].'%')));
+			$i=0;
+			
+			//draw it out
+			foreach($keywords as $keyword){
+				$response[$i]['value']=$keyword['Keyword']['name'];
+				$response[$i]['label']="<span class=\"name\">".$keyword['Keyword']['name']."</span>";
+				$i++;
+			}
+			
+			//and finally, release
+			echo json_encode($response);
+		}else{
+			
+			//no Ajax?  then show our results.
+			if(!empty($this->data)){
+				
+				//our search term
+				$this->set('searchedFor', $this->data['Task']['name']);
+		
+				//set the tasks
+				$this->Task->bindModel(array(
+					'hasOne' => array(
+						'KeywordsTasks',
+						'FilterKeyword' => array(
+							'className' => 'Keyword',
+							'foreignKey' => false,
+							'conditions' => array('FilterKeyword.id = KeywordsTasks.keyword_id')
+						)
+					)
+				));
+				$this->set('tasks', $this->Task->find('all', array(
+					'conditions'=>array('FilterKeyword.name'=>$this->data['Task']['name']),
+					'order' => array('Task.deadline')
+				)));
+				
+				//tasks complete
+				$this->Task->bindModel(array(
+					'hasOne' => array(
+						'KeywordsTasks',
+						'FilterKeyword' => array(
+							'className' => 'Keyword',
+							'foreignKey' => false,
+							'conditions' => array('FilterKeyword.id = KeywordsTasks.keyword_id')
+						)
+					)
+				));
+				$this->set('tasksComplete', $this->Task->find('all', array(
+					'conditions'=>array('FilterKeyword.name'=>$this->data['Task']['name'],'status_id'=>'2'),
+					'order' => array('Task.deadline')
+				)));
+				
+				//tasks in progress
+				$this->Task->bindModel(array(
+					'hasOne' => array(
+						'KeywordsTasks',
+						'FilterKeyword' => array(
+							'className' => 'Keyword',
+							'foreignKey' => false,
+							'conditions' => array('FilterKeyword.id = KeywordsTasks.keyword_id')
+						)
+					)
+				));
+				$this->set('tasksInProgress', $this->Task->find('all', array(
+					'conditions'=>array('FilterKeyword.name'=>$this->data['Task']['name'],'status_id'=>'1')
+				)));
+				
+				//our statuses
+				$this->set('statuses', $this->Task->Status->find('list'));
+				
+				//our locations
+				$this->set('locations', $this->Task->Location->find('list'));
+				
+				//our keywords
+				$this->set('keywords', $this->Task->Keyword->find('list'));
+				
+				//our link locations
+				$linkLocation['/foundersFactory/tasks/'] = "Show by Location";
+				foreach($this->Task->Location->find('list') as $key => $location){
+					$linkLocation['/foundersFactory/tasks/showByLocation/'.$key] = $location;
+				}
+				$this->set('linkLocations', $linkLocation);
+			}
 		}
 	}
 }

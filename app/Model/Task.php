@@ -26,6 +26,14 @@ class Task extends AppModel{
 			'foreignKey' => 'task_id',
 			'associationForeignKey' => 'location_id',
 			'with' => 'LocationsTasks'
+		),
+		'Keyword' => array(
+			'className' => 'Keyword',
+			'joinTable' => 'keywords_tasks',
+			'foreignKey' => 'task_id',
+			'associationForeignKey' => 'keyword_id',
+			'with' => 'KeywordsTasks',
+			'unique' => 'keepExisting'
 		)
 	);
 	

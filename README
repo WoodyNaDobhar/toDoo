@@ -24,11 +24,127 @@ dozen different programs, and half of them think it's a lower case, and the othe
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `keywords`
+--
+
+CREATE TABLE IF NOT EXISTS `keywords` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(35) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+--
+-- Dumping data for table `keywords`
+--
+
+INSERT INTO `keywords` (`id`, `name`) VALUES
+(2, 'Fun'),
+(3, 'High'),
+(4, 'Medium'),
+(5, 'Low'),
+(6, 'Unobligated');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `keywords_tasks`
+--
+
+CREATE TABLE IF NOT EXISTS `keywords_tasks` (
+  `keyword_id` int(10) unsigned NOT NULL,
+  `task_id` int(10) unsigned NOT NULL,
+  KEY `task_id` (`task_id`),
+  KEY `keyword_id` (`keyword_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `keywords_tasks`
+--
+
+INSERT INTO `keywords_tasks` (`keyword_id`, `task_id`) VALUES
+(2, 15),
+(3, 15),
+(6, 15),
+(2, 12),
+(5, 12),
+(6, 12),
+(2, 14),
+(4, 14),
+(6, 14);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `locations`
+--
+
+CREATE TABLE IF NOT EXISTS `locations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `locations`
+--
+
+INSERT INTO `locations` (`id`, `name`) VALUES
+(1, 'None'),
+(2, 'Work'),
+(4, 'Shopping'),
+(5, 'Amtgard');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `locations_tasks`
+--
+
+CREATE TABLE IF NOT EXISTS `locations_tasks` (
+  `location_id` int(10) unsigned NOT NULL,
+  `task_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`location_id`,`task_id`),
+  KEY `task_id` (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `locations_tasks`
+--
+
+INSERT INTO `locations_tasks` (`location_id`, `task_id`) VALUES
+(1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_points`
+--
+
+CREATE TABLE IF NOT EXISTS `map_points` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `location_id` int(10) unsigned NOT NULL DEFAULT '1',
+  `latitude` float(9,6) DEFAULT NULL,
+  `longitude` float(9,6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`location_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `map_points`
+--
+
+INSERT INTO `map_points` (`id`, `location_id`, `latitude`, `longitude`) VALUES
+(1, 2, 39.986900, -83.006676),
+(4, 2, 12.345678, -123.456787);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `statuses`
 --
 
 CREATE TABLE IF NOT EXISTS `statuses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
@@ -49,9 +165,10 @@ INSERT INTO `statuses` (`id`, `name`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `statuses_tasks` (
-  `status_id` int(11) NOT NULL,
-  `task_id` int(11) NOT NULL,
-  PRIMARY KEY (`status_id`,`task_id`)
+  `status_id` int(10) unsigned NOT NULL,
+  `task_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`status_id`,`task_id`),
+  KEY `task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -72,91 +189,62 @@ INSERT INTO `statuses_tasks` (`status_id`, `task_id`) VALUES
 CREATE TABLE IF NOT EXISTS `tasks` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(50) NOT NULL,
-  `status_id` int(10) NOT NULL DEFAULT '1',
+  `status_id` int(10) unsigned NOT NULL DEFAULT '1',
+  `location_id` int(10) unsigned NOT NULL DEFAULT '1',
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deadline` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `completed_on` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+  PRIMARY KEY (`id`),
+  KEY `status_id` (`status_id`),
+  KEY `location_id` (`location_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `title`, `status_id`, `created_on`, `deadline`, `completed_on`) VALUES
-(1, 'Test Task 1', 1, '2012-01-20 05:00:00', '2012-01-01 20:13:00', '0000-00-00 00:00:00'),
-(2, 'Test Task 2', 1, '2012-01-20 05:00:00', '2012-01-30 20:13:58', '0000-00-00 00:00:00'),
-(3, 'Test Task 3', 1, '2012-01-20 05:00:00', '2012-01-29 20:14:22', '0000-00-00 00:00:00'),
-(5, 'Test Add 2a', 2, '2012-01-20 05:00:00', '2012-08-27 07:10:00', '2012-01-27 06:52:05'),
-(6, 'Test Add 3', 3, '2012-01-27 05:04:07', '2012-04-27 09:03:00', '0000-00-00 00:00:00'),
-(7, 'Test Add 4', 1, '2012-01-27 05:34:07', '2012-10-27 09:33:00', '0000-00-00 00:00:00'),
-(8, 'Test Add 5', 3, '2012-01-27 05:34:23', '2012-08-27 09:34:00', '0000-00-00 00:00:00'),
-(9, 'Test Add 6', 2, '2012-01-27 07:56:52', '2012-01-13 07:56:00', '2012-01-27 07:57:00'),
-(10, 'Test Add 6', 2, '2012-01-27 07:57:18', '2012-05-27 06:57:00', '2012-01-27 07:57:29');
-
---
--- Table structure for table `locations`
---
-
-CREATE TABLE IF NOT EXISTS `locations` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
-
---
--- Dumping data for table `locations`
---
-
-INSERT INTO `locations` (`id`, `name`) VALUES
-(1, 'None'),
-(2, 'Work'),
-(4, 'Shopping');
-
---
--- Table structure for table `locations_tasks`
---
-
-CREATE TABLE IF NOT EXISTS `locations_tasks` (
-  `location_id` int(11) NOT NULL,
-  `task_id` int(11) NOT NULL,
-  PRIMARY KEY (`location_id`,`task_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `locations_tasks`
---
-
-INSERT INTO `locations_tasks` (`location_id`, `task_id`) VALUES
-(1, 1);
-
---
--- Table structure for table `map_points`
---
-
-CREATE TABLE IF NOT EXISTS `map_points` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `location_id` int(10) NOT NULL DEFAULT '0',
-  `latitude` float(9,6) DEFAULT NULL,
-  `longitude` float(9,6) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`location_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
-
---
--- Dumping data for table `map_points`
---
-
-INSERT INTO `map_points` (`id`, `location_id`, `latitude`, `longitude`) VALUES
-(1, 2, 39.986900, -83.006676),
-(4, 2, 12.345678, -123.456787);
+INSERT INTO `tasks` (`id`, `title`, `status_id`, `location_id`, `created_on`, `deadline`, `completed_on`) VALUES
+(1, 'Test Task 1', 1, 2, '2012-01-20 05:00:00', '2012-01-01 20:13:00', '0000-00-00 00:00:00'),
+(2, 'Test Task 2', 1, 1, '2012-01-20 05:00:00', '2012-01-30 20:13:58', '0000-00-00 00:00:00'),
+(3, 'Test Task 3', 1, 1, '2012-01-20 05:00:00', '2012-01-29 20:14:22', '0000-00-00 00:00:00'),
+(5, 'Test Add 2a', 2, 1, '2012-01-20 05:00:00', '2012-08-27 07:10:00', '2012-01-27 06:52:05'),
+(6, 'Test Add 3', 3, 1, '2012-01-27 05:04:07', '2012-04-27 09:03:00', '0000-00-00 00:00:00'),
+(7, 'Test Add 4', 1, 1, '2012-01-27 05:34:07', '2012-10-27 09:33:00', '0000-00-00 00:00:00'),
+(8, 'Test Add 5', 3, 1, '2012-01-27 05:34:23', '2012-08-27 09:34:00', '0000-00-00 00:00:00'),
+(9, 'Test Add 6', 2, 1, '2012-01-27 07:56:52', '2012-01-13 07:56:00', '2012-01-27 07:57:00'),
+(10, 'Test Add 6', 2, 1, '2012-01-27 07:57:18', '2012-05-27 06:57:00', '2012-01-27 07:57:29'),
+(11, 'Test Add 5', 1, 2, '2012-01-31 00:50:30', '2012-01-31 00:50:00', '0000-00-00 00:00:00'),
+(12, 'Test Add 7', 1, 5, '2012-01-31 18:41:22', '2012-03-31 17:41:00', '0000-00-00 00:00:00'),
+(14, 'Test Keyword 1', 2, 5, '2012-01-31 20:11:56', '2012-12-31 20:02:00', '2012-02-01 21:14:31'),
+(15, 'Woop Up on Bitches', 1, 5, '2012-01-31 20:16:44', '2012-12-31 20:16:00', '0000-00-00 00:00:00');
 
 --
 -- Constraints for dumped tables
 --
 
 --
+-- Constraints for table `keywords_tasks`
+--
+ALTER TABLE `keywords_tasks`
+  ADD CONSTRAINT `keywords_tasks_ibfk_4` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `keywords_tasks_ibfk_3` FOREIGN KEY (`keyword_id`) REFERENCES `keywords` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `locations_tasks`
+--
+ALTER TABLE `locations_tasks`
+  ADD CONSTRAINT `locations_tasks_ibfk_2` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`),
+  ADD CONSTRAINT `locations_tasks_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`);
+
+--
 -- Constraints for table `map_points`
 --
 ALTER TABLE `map_points`
   ADD CONSTRAINT `map_points_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`);
+
+--
+-- Constraints for table `statuses_tasks`
+--
+ALTER TABLE `statuses_tasks`
+  ADD CONSTRAINT `statuses_tasks_ibfk_2` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`),
+  ADD CONSTRAINT `statuses_tasks_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `statuses` (`id`);

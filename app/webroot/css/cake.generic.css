@@ -118,6 +118,12 @@ div.view {
 	border-left:1px solid #666;
 	padding:10px 2%;
 }
+div.formSmall {
+	float:right;
+	width:25%;
+	border-left:1px solid #666;
+	height: 100px;
+}
 div.actions {
 	float:left;
 	width:16%;

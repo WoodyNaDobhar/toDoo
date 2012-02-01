@@ -11,8 +11,9 @@
 class MapPointsController extends AppController{
 	
 	//our vars
-	public $name = 'MapPoints';
+	public $name = 'MapPoint';
 	public $components = array('Session');
+	var $helpers = array('Js');
 	
 	//default, list the mapPoints in progress, in order of deadline
 	public function index(){
