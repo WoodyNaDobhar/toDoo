@@ -15,6 +15,11 @@ class KeywordsController extends AppController{
 	public $components = array('Session');
 	var $helpers = array('Js');
 	
+	//start logging when the data is in but before rendering
+	function beforeRender(){
+		$this->recordActivity();
+	}
+	
 	//default, list the keywords in progress, in order of deadline
 	public function index(){
 		

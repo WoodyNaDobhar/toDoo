@@ -15,6 +15,11 @@ class TasksController extends AppController{
 	var $helpers = array('Html', 'Form', 'Js');
 	public $components = array('Session', 'RequestHandler');
 	
+	//start logging when the data is in but before rendering
+	function beforeRender(){
+		$this->recordActivity();
+	}
+	
 	//default, list the tasks in progress, in order of deadline
 	public function index(){
 		
@@ -227,6 +232,9 @@ class TasksController extends AppController{
 				
 				//our search term
 				$this->set('searchedFor', $this->data['Task']['name']);
+				
+				//log it!
+				$this->log($this->data['Task']['name'], 'searched_for');
 		
 				//set the tasks
 				$this->Task->bindModel(array(
